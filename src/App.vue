@@ -1,7 +1,27 @@
 <script setup lang="ts">
-// // This starter template is using Vue 3 <script setup> SFCs
-// // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-// import HelloWorld from './components/HelloWorld.vue'
+// This starter template is using Vue 3 <script setup> SFCs
+// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
+
+import { onMounted, ref } from 'vue';
+import axios from 'axios'
+
+const captchaCode = ref<string>('');
+
+function getCaptchaCode() {
+  axios.get('http://localhost:7000/public/getCaptcha').then(res => {
+    const { status, data } = res
+    if (status === 200) {
+      if (data.code === 200) {
+        console.log('data', data)
+        captchaCode.value = data.data.data
+      }
+    }
+  })
+}
+
+onMounted(() => {
+  getCaptchaCode();
+})
 </script>
 
 <template>
@@ -24,12 +44,14 @@
         </div>
         <div class="layui-form-item">
           <label class="layui-form-label">验证码</label>
-          <div class="layui-input-block">
+          <div class="layui-input-inline">
             <input type="text" name="title" required lay-verify="required" placeholder="请输入验证码" autocomplete="off"
               class="layui-input">
           </div>
+          <div class="layui-form-mid layui-word-aux captch-code-svg" v-html="captchaCode" @click="getCaptchaCode"
+            title="点击刷新验证码"></div>
         </div>
-        <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+        <button class="layui-btn" lay-submit lay-filter="formDemo">点击登录</button>
         <a type="reset" class="forgot-pwd">忘记密码?</a>
       </form>
     </div>
@@ -55,6 +77,10 @@
     &:hover {
       color: #009688;
     }
+  }
+
+  .captch-code-svg {
+    cursor: pointer;
   }
 }
 </style>
