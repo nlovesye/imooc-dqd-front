@@ -1,59 +1,147 @@
-<script setup lang="ts">
+<script lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 
-import { onMounted, ref } from 'vue';
-import axios from 'axios'
+import { onMounted, ref } from "vue";
+import axios from "axios";
+import { useForm, Form, Field, ErrorMessage } from "vee-validate";
 
-const captchaCode = ref<string>('');
+export default {
+  components: {
+    Form,
+    Field,
+    ErrorMessage,
+  },
+  setup() {
+    const captchaSvgCode = ref<string>("");
 
-function getCaptchaCode() {
-  axios.get('http://localhost:7000/public/getCaptcha').then(res => {
-    const { status, data } = res
-    if (status === 200) {
-      if (data.code === 200) {
-        console.log('data', data)
-        captchaCode.value = data.data.data
+    const initialValues = {
+      userName: "",
+      password: "",
+      code: "",
+    };
+
+    const validationSchema = {
+      userName: validLength,
+      password: validLength,
+      code: (value: unknown) => {
+        const val = value as string;
+        if (!val || !val.trim()) {
+          return "不能为空!";
+        }
+        if (val.length !== 4) {
+          return "请输入4位验证码!";
+        }
+        return true;
+      },
+    };
+
+    const { values: formValues, errors } = useForm({
+      initialValues,
+      validationSchema,
+    });
+
+    function validLength(value: unknown) {
+      const val = value as string;
+      if (!val || !val.trim()) {
+        return "不能为空!";
       }
+      if (val.length < 6 || val.length > 20) {
+        return "请输入6-20位字符!";
+      }
+      return true;
     }
-  })
-}
 
-onMounted(() => {
-  getCaptchaCode();
-})
+    function getCaptchaCode() {
+      axios.get("http://localhost:7000/public/getCaptcha").then((response) => {
+        if (response.status === 200) {
+          const { code, data } = response.data;
+          if (code === 200) {
+            captchaSvgCode.value = data.data;
+          }
+        }
+      });
+    }
+
+    const onSubmit = async () => {
+      console.log("onSubmit", formValues);
+    };
+
+    onMounted(() => {
+      getCaptchaCode();
+    });
+
+    return {
+      errors,
+      onSubmit,
+      validationSchema,
+      captchaSvgCode,
+      getCaptchaCode,
+      formValues,
+    };
+  },
+};
 </script>
 
 <template>
   <div class="user">
     <div class="layui-container">
-      <form class="layui-form layui-form-pane" action="">
+      <Form
+        class="layui-form layui-form-pane"
+        @submit="onSubmit"
+        :validation-schema="validationSchema"
+      >
         <div class="layui-form-item">
           <label class="layui-form-label">手机/邮箱</label>
           <div class="layui-input-block">
-            <input type="text" name="title" required lay-verify="required" placeholder="请输入手机/邮箱" autocomplete="off"
-              class="layui-input">
+            <Field
+              type="text"
+              name="userName"
+              placeholder="请输入手机/邮箱"
+              autocomplete="off"
+              class="layui-input"
+              v-model="formValues.userName"
+            />
+            <ErrorMessage class="error-text" name="userName" />
           </div>
         </div>
         <div class="layui-form-item">
           <label class="layui-form-label">密码</label>
           <div class="layui-input-block">
-            <input type="password" name="title" required lay-verify="required" placeholder="请输入密码" autocomplete="off"
-              class="layui-input">
+            <Field
+              type="password"
+              name="password"
+              placeholder="请输入密码"
+              autocomplete="off"
+              class="layui-input"
+              v-model="formValues.password"
+            />
+            <ErrorMessage class="error-text" name="password" />
           </div>
         </div>
         <div class="layui-form-item">
           <label class="layui-form-label">验证码</label>
           <div class="layui-input-inline">
-            <input type="text" name="title" required lay-verify="required" placeholder="请输入验证码" autocomplete="off"
-              class="layui-input">
+            <Field
+              type="text"
+              name="code"
+              placeholder="请输入验证码"
+              autocomplete="off"
+              class="layui-input"
+              v-model="formValues.code"
+            />
+            <ErrorMessage class="error-text" name="code" />
           </div>
-          <div class="layui-form-mid layui-word-aux captch-code-svg" v-html="captchaCode" @click="getCaptchaCode"
-            title="点击刷新验证码"></div>
+          <div
+            class="layui-form-mid layui-word-aux captch-code-svg"
+            v-html="captchaSvgCode"
+            @click="getCaptchaCode"
+            title="点击刷新验证码"
+          ></div>
         </div>
-        <button class="layui-btn" lay-submit lay-filter="formDemo">点击登录</button>
+        <button class="layui-btn" lay-filter="formDemo">点击登录</button>
         <a type="reset" class="forgot-pwd">忘记密码?</a>
-      </form>
+      </Form>
     </div>
   </div>
 </template>
@@ -81,6 +169,11 @@ onMounted(() => {
 
   .captch-code-svg {
     cursor: pointer;
+    padding: 0 !important;
+  }
+
+  .error-text {
+    color: #ff0000;
   }
 }
 </style>
