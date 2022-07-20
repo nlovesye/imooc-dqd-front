@@ -1,63 +1,76 @@
 <template>
-  <div>
-    <div class="login">
-      <div class="layui-container">
-        <Form
-          class="layui-form layui-form-pane"
-          @submit="onSubmit"
-          :validation-schema="validationSchema"
-        >
-          <div class="layui-form-item">
-            <label class="layui-form-label">手机/邮箱</label>
-            <div class="layui-input-block">
-              <Field
-                type="text"
-                name="userName"
-                placeholder="请输入手机/邮箱"
-                autocomplete="off"
-                class="layui-input"
-                v-model="formValues.userName"
-              />
-              <ErrorMessage class="error-text" name="userName" />
+  <div class="login">
+    <div class="layui-container">
+      <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+        <ul class="layui-tab-title">
+          <li class="layui-this">登录</li>
+          <router-link :to="{ name: 'reg' }">
+            <li>注册</li>
+          </router-link>
+        </ul>
+
+        <div class="layui-tab-content">
+          <Form
+            class="layui-form layui-form-pane"
+            @submit="onSubmit"
+            :validation-schema="validationSchema"
+          >
+            <div class="layui-form-item">
+              <label class="layui-form-label">手机/邮箱</label>
+              <div class="layui-input-block">
+                <Field
+                  type="text"
+                  name="userName"
+                  placeholder="请输入手机/邮箱"
+                  autocomplete="off"
+                  class="layui-input"
+                  v-model="formValues.userName"
+                />
+                <ErrorMessage class="error-text" name="userName" />
+              </div>
             </div>
-          </div>
-          <div class="layui-form-item">
-            <label class="layui-form-label">密码</label>
-            <div class="layui-input-block">
-              <Field
-                type="password"
-                name="password"
-                placeholder="请输入密码"
-                autocomplete="off"
-                class="layui-input"
-                v-model="formValues.password"
-              />
-              <ErrorMessage class="error-text" name="password" />
+            <div class="layui-form-item">
+              <label class="layui-form-label">密码</label>
+              <div class="layui-input-block">
+                <Field
+                  type="password"
+                  name="password"
+                  placeholder="请输入密码"
+                  autocomplete="off"
+                  class="layui-input"
+                  v-model="formValues.password"
+                />
+                <ErrorMessage class="error-text" name="password" />
+              </div>
             </div>
-          </div>
-          <div class="layui-form-item">
-            <label class="layui-form-label">验证码</label>
-            <div class="layui-input-inline">
-              <Field
-                type="text"
-                name="code"
-                placeholder="请输入验证码"
-                autocomplete="off"
-                class="layui-input"
-                v-model="formValues.code"
-              />
-              <ErrorMessage class="error-text" name="code" />
+            <div class="layui-form-item">
+              <label class="layui-form-label">验证码</label>
+              <div class="layui-input-inline">
+                <Field
+                  type="text"
+                  name="code"
+                  placeholder="请输入验证码"
+                  autocomplete="off"
+                  class="layui-input"
+                  v-model="formValues.code"
+                />
+                <ErrorMessage class="error-text" name="code" />
+              </div>
+              <div
+                class="layui-form-mid layui-word-aux captch-code-svg"
+                v-html="captchaSvgCode"
+                @click="getCaptchaCode"
+                title="点击刷新验证码"
+              ></div>
             </div>
-            <div
-              class="layui-form-mid layui-word-aux captch-code-svg"
-              v-html="captchaSvgCode"
-              @click="getCaptchaCode"
-              title="点击刷新验证码"
-            ></div>
-          </div>
-          <button class="layui-btn" lay-filter="formDemo">点击登录</button>
-          <a type="reset" class="forgot-pwd">忘记密码?</a>
-        </Form>
+            <button class="layui-btn" lay-filter="formDemo">点击登录</button>
+            <router-link :to="{ name: 'forget' }" class="forgot-pwd"
+              >忘记密码?</router-link
+            >
+
+            <div class="third-platform">或者使用社交账号登录</div>
+          </Form>
+        </div>
       </div>
     </div>
   </div>
@@ -68,6 +81,8 @@ import { onMounted, ref } from "vue";
 import axios from "axios";
 import { useForm, Form, Field, ErrorMessage } from "vee-validate";
 
+type FormField = "userName" | "password" | "code";
+
 export default {
   components: {
     Form,
@@ -77,7 +92,7 @@ export default {
   setup() {
     const captchaSvgCode = ref<string>("");
 
-    const initialValues = {
+    const initialValues: Record<FormField, string> = {
       userName: "",
       password: "",
       code: "",
@@ -98,9 +113,9 @@ export default {
       },
     };
 
-    const { values: formValues, errors } = useForm({
+    const { values: formValues } = useForm({
       initialValues,
-      validationSchema,
+      validationSchema: validationSchema,
     });
 
     function validLength(value: unknown) {
@@ -134,12 +149,11 @@ export default {
     });
 
     return {
-      errors,
-      onSubmit,
-      validationSchema,
       captchaSvgCode,
+      validationSchema,
       getCaptchaCode,
       formValues,
+      onSubmit,
     };
   },
 };
@@ -147,9 +161,12 @@ export default {
 
 <style lang="scss" scoped>
 .login {
+  height: 100%;
+  padding-top: 16px;
+
   .layui-container {
-    height: 100%;
     background-color: #fff;
+    padding: 2px 20px 12px;
   }
 
   input {
@@ -167,6 +184,16 @@ export default {
 
   .captch-code-svg {
     cursor: pointer;
+  }
+
+  .third-platform {
+    margin-top: 28px;
+    height: 26px;
+    line-height: 26px;
+  }
+
+  .error-text {
+    color: red;
   }
 }
 </style>
