@@ -218,6 +218,7 @@ export default {
 
   .captch-code-svg {
     cursor: pointer;
+    padding: 0 !important;
   }
 
   .third-platform {
