@@ -12,7 +12,6 @@
         <div class="layui-tab-content">
           <Form
             class="layui-form layui-form-pane"
-            @submit="onSubmit"
             :validation-schema="validationSchema"
           >
             <div class="layui-form-item">
@@ -50,7 +49,9 @@
                 title="点击刷新验证码"
               ></div>
             </div>
-            <button class="layui-btn" lay-filter="formDemo">提交</button>
+            <button class="layui-btn" @click="onSubmit" lay-filter="formDemo">
+              提交
+            </button>
           </Form>
         </div>
       </div>
@@ -62,6 +63,7 @@
 import { onMounted, ref } from "vue";
 import axios from "axios";
 import { useForm, Form, Field, ErrorMessage } from "vee-validate";
+import { forget } from "../api/user";
 
 type FormField = "userName" | "code";
 
@@ -121,7 +123,21 @@ export default {
     }
 
     const onSubmit = async () => {
-      console.log("onLogin", formValues);
+      try {
+        const result = await forget({
+          userName: formValues.userName,
+          code: formValues.code,
+          email: formValues.userName,
+        });
+        if (result.status === 200) {
+          const { code, data, message } = result.data;
+          if (code === 200) {
+            alert(message);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     onMounted(() => {
