@@ -103,8 +103,9 @@
 
 <script lang="ts">
 import { onMounted, ref } from "vue";
-import axios from "axios";
 import { useForm, Form, Field, ErrorMessage } from "vee-validate";
+
+import { request } from "@/utils";
 
 type FormField =
   | "userName"
@@ -164,13 +165,8 @@ export default {
     }
 
     function getCaptchaCode() {
-      axios.get("http://localhost:7000/public/getCaptcha").then((response) => {
-        if (response.status === 200) {
-          const { code, data } = response.data;
-          if (code === 200) {
-            captchaSvgCode.value = data.data;
-          }
-        }
+      request.get("/public/getCaptcha").then((response) => {
+        captchaSvgCode.value = response.data.data;
       });
     }
 

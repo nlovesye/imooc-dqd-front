@@ -61,9 +61,10 @@
 
 <script lang="ts">
 import { onMounted, ref } from "vue";
-import axios from "axios";
 import { useForm, Form, Field, ErrorMessage } from "vee-validate";
-import { forget } from "../api/user";
+
+import { request } from "@/utils";
+import { forget } from "@/api/user";
 
 type FormField = "userName" | "code";
 
@@ -112,31 +113,20 @@ export default {
     }
 
     function getCaptchaCode() {
-      axios.get("http://localhost:7000/public/getCaptcha").then((response) => {
-        if (response.status === 200) {
-          const { code, data } = response.data;
-          if (code === 200) {
-            captchaSvgCode.value = data.data;
-          }
-        }
+      request.get("/public/getCaptcha").then((response) => {
+        captchaSvgCode.value = response.data.data;
       });
     }
 
     const onSubmit = async () => {
-      try {
-        const result = await forget({
-          userName: formValues.userName,
-          code: formValues.code,
-          email: formValues.userName,
-        });
-        if (result.status === 200) {
-          const { code, data, message } = result.data;
-          if (code === 200) {
-            alert(message);
-          }
-        }
-      } catch (error) {
-        console.log(error);
+      const result = await forget({
+        userName: formValues.userName,
+        code: formValues.code,
+        email: formValues.userName,
+      });
+      const { code, data, message } = result;
+      if (code === 200) {
+        alert(message);
       }
     };
 

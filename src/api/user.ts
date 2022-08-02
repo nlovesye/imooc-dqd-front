@@ -1,4 +1,4 @@
-import axios from "axios";
+import { request } from "@/utils";
 
 interface ForgetParams {
   code: string;
@@ -6,11 +6,9 @@ interface ForgetParams {
   email: string;
 }
 
-export async function forget(
-  sendInfo: ForgetParams
-): Promise<{
-  data: { data: string; message: string; code: number };
-  status: number;
-}> {
-  return await axios.post("http://localhost:7000/user/forget", sendInfo);
+export async function forget(sendInfo: ForgetParams) {
+  return await request.post<
+    { data: string; message: string; code: number },
+    ForgetParams
+  >("/user/forget", sendInfo);
 }

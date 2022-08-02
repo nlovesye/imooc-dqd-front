@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import * as path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,7 +14,25 @@ export default defineConfig({
       },
     },
   },
+  define: {
+    "process.env": {
+      NODE_ENV: process.env?.NODE_ENV || "unknown",
+    },
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
   server: {
-    host: "0.0.0.0",
+    port: 3700,
+    // host: "0.0.0.0",
+    // proxy: {
+    //   "/api": {
+    //     target: "http://localhost:7000", //代理接口
+    //     rewrite: (path) => path.replace(/^\/api/, ""),
+    //     changeOrigin: true,
+    //   },
+    // },
   },
 });
