@@ -79,8 +79,9 @@
 <script lang="ts">
 import { onMounted, ref } from "vue";
 import { useForm, Form, Field, ErrorMessage } from "vee-validate";
+import { v4 as uuidv4 } from "uuid";
 
-import { request } from "@/utils";
+import { getCaptcha } from "@/api/public";
 
 type FormField = "userName" | "password" | "code";
 
@@ -131,7 +132,7 @@ export default {
     }
 
     function getCaptchaCode() {
-      request.get("/public/getCaptcha").then((response) => {
+      getCaptcha({ sid: uuidv4() }).then((response) => {
         captchaSvgCode.value = response.data.data;
       });
     }
