@@ -14,10 +14,10 @@ export async function forget(sendInfo: ForgetParams) {
 }
 
 export async function login(
-  userInfo: Record<"userName" | "password" | "code", string>
+  loginInfo: Record<"username" | "password" | "code" | "sid", string>
 ) {
-  return await request.post<{ data: string; message: string; code: number }>(
+  return await request.post<{ data: string; msg: string; code: number }>(
     "/user/login",
-    userInfo
+    loginInfo
   );
 }

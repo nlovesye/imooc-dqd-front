@@ -78,10 +78,13 @@
 
 <script lang="ts">
 import { onMounted, ref } from "vue";
+import { useStore } from "vuex";
 import { useForm, Form, Field, ErrorMessage } from "vee-validate";
 import { v4 as uuidv4 } from "uuid";
 
 import { getCaptcha } from "@/api/public";
+import type { RootState } from "@/store/type";
+import { login } from "@/api/user";
 
 type FormField = "userName" | "password" | "code";
 
@@ -92,6 +95,8 @@ export default {
     ErrorMessage,
   },
   setup() {
+    const store = useStore<RootState>();
+
     const captchaSvgCode = ref<string>("");
 
     const initialValues: Record<FormField, string> = {
@@ -132,13 +137,25 @@ export default {
     }
 
     function getCaptchaCode() {
-      getCaptcha({ sid: uuidv4() }).then((response) => {
+      let sid = store.state.sid;
+      if (!sid) {
+        store.commit("setSid", uuidv4());
+        sid = store.state.sid;
+      }
+      getCaptcha({ sid }).then((response) => {
         captchaSvgCode.value = response.data.data;
       });
     }
 
     const onSubmit = async () => {
       console.log("onSubmit", formValues);
+      const ret = await login({
+        username: formValues.userName,
+        password: formValues.password,
+        code: formValues.code,
+        sid: store.state.sid,
+      });
+      console.log("ret", ret);
     };
 
     onMounted(() => {
