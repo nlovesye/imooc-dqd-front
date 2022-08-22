@@ -16,6 +16,13 @@ const routes: Readonly<RouteRecordRaw>[] = [
     path: "/reg",
     name: "reg",
     component: Reg,
+    beforeEnter: (to, from, next) => {
+      if (from.name === "login") {
+        next();
+      } else {
+        next("/login");
+      }
+    },
   },
   {
     path: "/forget",

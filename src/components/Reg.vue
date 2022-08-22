@@ -104,8 +104,14 @@
 <script lang="ts">
 import { onMounted, ref } from "vue";
 import { useForm, Form, Field, ErrorMessage } from "vee-validate";
+import { v4 as uuidv4 } from "uuid";
+import { Message } from "view-ui-plus";
+import { useRouter } from "vue-router";
 
-import { request } from "@/utils";
+import { getCaptcha } from "@/api/public";
+import { useStore } from "vuex";
+import { RootState } from "@/store/type";
+import { reg } from "@/api/user";
 
 type FormField =
   | "userName"
@@ -121,6 +127,9 @@ export default {
     ErrorMessage,
   },
   setup() {
+    const store = useStore<RootState>();
+    const router = useRouter();
+
     const captchaSvgCode = ref<string>("");
 
     const initialValues: Record<FormField, string> = {
@@ -165,13 +174,35 @@ export default {
     }
 
     function getCaptchaCode() {
-      request.get("/public/getCaptcha").then((response) => {
+      let sid = store.state.sid;
+      if (!sid) {
+        store.commit("setSid", uuidv4());
+        sid = store.state.sid;
+      }
+      getCaptcha({ sid }).then((response) => {
         captchaSvgCode.value = response.data.data;
       });
     }
 
     const onSubmit = async () => {
       console.log("onSubmit", formValues);
+      if (formValues.password !== formValues.confirmPassword) {
+        Message.error("两次输入的密码不相同");
+        return;
+      }
+      const ret = await reg({
+        username: formValues.userName,
+        password: formValues.password,
+        code: formValues.code,
+        sid: store.state.sid,
+        nickName: formValues.nickName,
+      });
+      if (ret.code === 200) {
+        Message.success(ret.msg);
+        setTimeout(() => {
+          router.push({ name: "login" });
+        }, 1000);
+      }
     };
 
     onMounted(() => {

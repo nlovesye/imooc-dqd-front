@@ -148,7 +148,6 @@ export default {
     }
 
     const onSubmit = async () => {
-      console.log("onSubmit", formValues);
       const ret = await login({
         username: formValues.userName,
         password: formValues.password,

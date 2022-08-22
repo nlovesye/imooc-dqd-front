@@ -21,3 +21,12 @@ export async function login(
     loginInfo
   );
 }
+
+export async function reg(
+  regInfo: Record<"username" | "nickName" | "password" | "code" | "sid", string>
+) {
+  return await request.post<{ data: string; msg: string; code: number }>(
+    "/user/reg",
+    regInfo
+  );
+}
