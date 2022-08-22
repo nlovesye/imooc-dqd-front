@@ -185,7 +185,6 @@ export default {
     }
 
     const onSubmit = async () => {
-      console.log("onSubmit", formValues);
       if (formValues.password !== formValues.confirmPassword) {
         Message.error("两次输入的密码不相同");
         return;
