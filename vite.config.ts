@@ -26,7 +26,7 @@ export default defineConfig({
   },
   server: {
     port: 3700,
-    // host: "0.0.0.0",
+    host: "0.0.0.0",
     // proxy: {
     //   "/api": {
     //     target: "http://localhost:7000", //代理接口
