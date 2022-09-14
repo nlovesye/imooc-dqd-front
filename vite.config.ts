@@ -29,7 +29,7 @@ export default defineConfig({
     host: "0.0.0.0",
     // proxy: {
     //   "/api": {
-    //     target: "http://localhost:7000", //代理接口
+    //     target: "http://localhost:7500", //代理接口
     //     rewrite: (path) => path.replace(/^\/api/, ""),
     //     changeOrigin: true,
     //   },
