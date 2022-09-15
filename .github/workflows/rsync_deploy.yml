@@ -1,10 +1,9 @@
-name: GitHub Pages
+name: Rsync Pages
 
 on:
   push:
     branches:
       - master # Set a branch name to trigger deployment
-  pull_request:
 
   workflow_dispatch:
 
@@ -27,8 +26,13 @@ jobs:
           npm ci
           npm run build
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: rsync deployments 🚀
+        uses: burnett01/rsync-deployments@5.2.1
         with:
-          branch: gh-pages
-          folder: dist # The folder the action should deploy.
+          switches: -avzr --delete
+          path: dist/
+          remote_path: /home/site/
+          remote_host: nlovesye.tpddns.cn
+          remote_port: 22
+          remote_user: root
+          remote_key: ${{ secrets.RSYNC_DEPLOY_KEY }}
