@@ -4,6 +4,7 @@ import * as path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  publicDir: '/imooc-dqd-frontend',
   plugins: [vue()],
   css: {
     // css预处理器
