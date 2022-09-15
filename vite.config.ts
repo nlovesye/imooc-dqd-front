@@ -15,14 +15,6 @@ export default defineConfig({
       },
     },
   },
-  build: {
-    rollupOptions: {
-      input: {
-        index: path.resolve(__dirname, "index.html"),
-        404: path.resolve(__dirname, "404.html"),
-      },
-    },
-  },
   define: {
     "process.env": {
       NODE_ENV: process.env?.NODE_ENV || "unknown",
