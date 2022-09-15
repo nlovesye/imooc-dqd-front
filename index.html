@@ -8,6 +8,15 @@
   <title>Imooc-dqd-frontend</title>
   <!-- 引入 layui.css -->
   <link href="//unpkg.com/layui@2.7.4/dist/css/layui.css" rel="stylesheet">
+  <script>
+    (function () {
+      let redirect = sessionStorage.redirect;
+      delete sessionStorage.redirect;
+      if (redirect && redirect !== location.href) {
+        history.replaceState(null, null, redirect);
+      }
+    })();
+  </script>
 </head>
 
 <body>
