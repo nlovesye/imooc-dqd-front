@@ -1,8 +1,15 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  createWebHashHistory,
+} from "vue-router";
 
 import routes from "./routes";
 
+const { VITE_NODE_ENV } = import.meta.env;
+
 export default createRouter({
-  history: createWebHistory(),
+  history:
+    VITE_NODE_ENV !== "ghPages" ? createWebHistory() : createWebHashHistory(),
   routes,
 });
