@@ -28,11 +28,6 @@ export default ({ mode }) => {
         },
       },
     },
-    define: {
-      "process.env": {
-        NODE_ENV: process.env?.NODE_ENV || "unknown",
-      },
-    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "src"),

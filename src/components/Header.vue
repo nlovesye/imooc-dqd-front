@@ -40,8 +40,6 @@ import { useStore } from "vuex";
 const router = useRouter();
 const store = useStore();
 
-console.log("store", store);
-
 const onDropdownClick = (name: "editProfile" | "exit") => {
   if (name === "exit") {
     store.commit("setUserInfo", { type: UserType.unknow });
