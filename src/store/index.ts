@@ -1,10 +1,13 @@
 import { createStore } from "vuex";
-import { RootState } from "./type";
-import { LocalStorage } from "./../utils/LocalStorage";
+import { RootState, UserInfo, UserType } from "./type";
+import { LocalStorage } from "@/utils/LocalStorage";
 
 const createDefaultState = (): RootState => {
   const state = {
     sid: LocalStorage.get("sid") || "",
+    userInfo: LocalStorage.get<UserInfo>("userInfo", true) || {
+      type: UserType.unknow,
+    },
   };
   return state;
 };
@@ -18,6 +21,10 @@ const store = createStore<RootState>({
     setSid(state: RootState, sid: string) {
       LocalStorage.set({ sid });
       state.sid = sid;
+    },
+    setUserInfo(state: RootState, userInfo: UserInfo) {
+      LocalStorage.set({ userInfo });
+      state.userInfo = userInfo;
     },
   },
 });

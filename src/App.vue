@@ -21,6 +21,10 @@ export default defineComponent({
 </template>
 
 <style lang="scss">
-@import "./assets/scss/var.scss";
-@import "./assets/scss/global.scss";
+.app-container {
+  width: 100%;
+  height: calc(100% - ($headerHeight + $footerHeight));
+  background-color: $appContainerBackgroundColor;
+  overflow-y: auto;
+}
 </style>

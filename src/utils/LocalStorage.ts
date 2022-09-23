@@ -3,10 +3,10 @@ import type { ILocalStorage } from "@/models";
 type LocalStorageKey = keyof ILocalStorage;
 
 export class LocalStorage {
-  public static get<T = string | null>(
+  public static get<T = string>(
     key: LocalStorageKey,
     parse: boolean = false
-  ): T {
+  ): T | null {
     const value = localStorage.getItem(key);
     const result = (!value || !parse
       ? value

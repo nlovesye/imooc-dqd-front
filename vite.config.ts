@@ -9,6 +9,14 @@ export default defineConfig({
   css: {
     // css预处理器
     preprocessorOptions: {
+      less: {
+        javascriptEnabled: true,
+        modifyVars: {
+          hack: `true; @import (reference) "${path.resolve(
+            "src/assets/less/var.less"
+          )}";`,
+        },
+      },
       scss: {
         // 引入 var.scss 这样就可以在全局中使用 var.scss中预定义的变量了
         additionalData: '@import "./src/assets/scss/var.scss";',

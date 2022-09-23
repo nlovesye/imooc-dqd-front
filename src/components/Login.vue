@@ -76,100 +76,87 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useForm, Form, Field, ErrorMessage } from "vee-validate";
 import { v4 as uuidv4 } from "uuid";
 
 import { getCaptcha } from "@/api/public";
-import type { RootState } from "@/store/type";
+import { RootState, UserType } from "@/store/type";
 import { login } from "@/api/user";
+import { useRouter } from "vue-router";
 
 type FormField = "userName" | "password" | "code";
 
-export default {
-  components: {
-    Form,
-    Field,
-    ErrorMessage,
-  },
-  setup() {
-    const store = useStore<RootState>();
+const router = useRouter();
+const store = useStore<RootState>();
 
-    const captchaSvgCode = ref<string>("");
+const captchaSvgCode = ref<string>("");
 
-    const initialValues: Record<FormField, string> = {
-      userName: "",
-      password: "",
-      code: "",
-    };
+const initialValues: Record<FormField, string> = {
+  userName: "",
+  password: "",
+  code: "",
+};
 
-    const validationSchema = {
-      userName: validLength,
-      password: validLength,
-      code: (value: unknown) => {
-        const val = value as string;
-        if (!val || !val.trim()) {
-          return "不能为空!";
-        }
-        if (val.length !== 4) {
-          return "请输入4位验证码!";
-        }
-        return true;
-      },
-    };
-
-    const { values: formValues } = useForm({
-      initialValues,
-      validationSchema: validationSchema,
-    });
-
-    function validLength(value: unknown) {
-      const val = value as string;
-      if (!val || !val.trim()) {
-        return "不能为空!";
-      }
-      if (val.length < 6 || val.length > 20) {
-        return "请输入6-20位字符!";
-      }
-      return true;
+const validationSchema = {
+  userName: validLength,
+  password: validLength,
+  code: (value: unknown) => {
+    const val = value as string;
+    if (!val || !val.trim()) {
+      return "不能为空!";
     }
-
-    function getCaptchaCode() {
-      let sid = store.state.sid;
-      if (!sid) {
-        store.commit("setSid", uuidv4());
-        sid = store.state.sid;
-      }
-      getCaptcha({ sid }).then((response) => {
-        captchaSvgCode.value = response.data.data;
-      });
+    if (val.length !== 4) {
+      return "请输入4位验证码!";
     }
-
-    const onSubmit = async () => {
-      const ret = await login({
-        username: formValues.userName,
-        password: formValues.password,
-        code: formValues.code,
-        sid: store.state.sid,
-      });
-      console.log("ret", ret);
-    };
-
-    onMounted(() => {
-      getCaptchaCode();
-    });
-
-    return {
-      captchaSvgCode,
-      validationSchema,
-      getCaptchaCode,
-      formValues,
-      onSubmit,
-    };
+    return true;
   },
 };
+
+const { values: formValues } = useForm({
+  initialValues,
+  validationSchema: validationSchema,
+});
+
+function validLength(value: unknown) {
+  const val = value as string;
+  if (!val || !val.trim()) {
+    return "不能为空!";
+  }
+  if (val.length < 6 || val.length > 20) {
+    return "请输入6-20位字符!";
+  }
+  return true;
+}
+
+function getCaptchaCode() {
+  let sid = store.state.sid;
+  if (!sid) {
+    store.commit("setSid", uuidv4());
+    sid = store.state.sid;
+  }
+  getCaptcha({ sid }).then((response) => {
+    captchaSvgCode.value = response.data.data;
+  });
+}
+
+const onSubmit = async () => {
+  const ret = await login({
+    username: formValues.userName,
+    password: formValues.password,
+    code: formValues.code,
+    sid: store.state.sid,
+  });
+  store.commit("setUserInfo", { type: UserType.primary });
+  router.push({ name: "home" });
+  console.log("ret", ret);
+};
+
+onMounted(() => {
+  getCaptchaCode();
+});
 </script>
 
 <style lang="scss" scoped>
