@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --mode default",
+    "dev": "vite --mode local",
     "build": "vue-tsc --noEmit && vite build --mode default",
     "build:gh-pages": "vue-tsc --noEmit && vite build --mode ghPages",
     "preview": "vite preview"
